@@ -3,7 +3,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
+# 2种标题方式，最后应用的root.title
 root = tk.Tk(className='Tk的所有控件测试')
+root.title('Tk的所有控件测试')
 root.geometry('400x600+100+100')
 
 # 1.设置菜单栏Menu(在软件标题下面，菜单选项按钮，包括多个子菜单项)
@@ -23,7 +25,8 @@ root.config(menu=menubar)
 # sashrelief/relief 分割线样式sunken/raised/flat
 pw = tk.PanedWindow(root, orient='vertical', sashrelief='sunken')
 pw.pack(fill='both', expand=1)
-# 3.状态栏Separator(软件界面底部显示状态的区域)
+# 3.分割线Separator(软件界面通过线段分割面板)
+# 状态栏(通过面板和分割线实现)(软件界面底部显示状态的区域)
 separator = ttk.Separator(root).pack(fill='x',padx=5)
 status_frame = ttk.Frame(root, relief='raised').pack(fill='x')
 label_status = ttk.Label(status_frame,text='状态栏').pack(side='left', fill='x')
