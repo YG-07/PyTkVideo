@@ -9,7 +9,6 @@ def paint(event):
     x2,y2 = (event.x, event.y)
     canvas.create_rectangle(x1, y1, x2, y2)
 
-
 root = tk.Tk(className='Tk的所有控件测试')
 root.geometry('400x600+100+100')
 
