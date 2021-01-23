@@ -10,10 +10,10 @@ class Application(Frame):
         super().__init__(master)    #super()是父类的构造器
         self.master = master
         self.pack()
-        self.createList()
+        self.createTup()
         self.createWidget()
 
-    def createList(self):
+    def createTup(self):
         # 创建元组(tuple)
         self.btnTup = \
             (('MC', 'M+', 'M-', 'MR'),\

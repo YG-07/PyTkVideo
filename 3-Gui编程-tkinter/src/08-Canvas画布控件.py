@@ -31,9 +31,9 @@ class Application(Frame):
         # 方法二：通过PIL库的Image导入图片，调整尺寸，再用ImageTk的函数显示在tk画布上
         imgp = Image.open("./img/nuo.gif")
         imgp = imgp.resize(self.reSizeImg(0.8,imgp), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(imgp)
+        self.img = ImageTk.PhotoImage(imgp)
 
-        self.canvas.create_image(600, 100, image=img)
+        self.canvas.create_image(600, 100, image=self.img)
         Button(self, text='随机画3个矩形', command=self.drawRecgs).pack(side='left')
 
     def reSizeImg(self, scale, imgPIL):
