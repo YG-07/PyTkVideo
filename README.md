@@ -72,3 +72,42 @@ def myPen(self, event):
     self.sx = event.x
     self.sy = event.y
 ```
+#### 2.2.5 橡皮擦思路
+1. 先startDraw，直接根据事件的(x,y)偏移一下画背景色的矩形
+```python
+self.c.create_rectangle(event.x-4,event.y-4,event.x+4,event.y+4, outline='#fff',fill='#fff')
+```
+### 2.3 改变颜色
+* 这里为`改变颜色`和颜色1容器绑定myFgc，为颜色2容器左键绑定myBgc，右键绑定myTou改为透明色
+```python
+self.color.bind('<Button-1>', self.myFgc)
+self.fgc.bind('<Button-1>', self.myFgc)
+self.bgc.bind('<Button-1>', self.myBgc)
+self.bgc.bind('<Button-3>', self.myTou)
+```
+### 2.4 颜色快捷按键
+* 绑定按键或组合键，判断按键事件的char，改变v1和颜色1容器的颜色
+```python
+self.master.bind('<KeyPress-r>', self.colorKey)
+self.master.bind('<KeyPress-g>', self.colorKey)
+self.master.bind('<KeyPress-y>', self.colorKey)
+self.master.bind('<KeyPress-p>', self.colorKey)
+self.master.bind('<KeyPress-b>', self.colorKey)
+
+def colorKey(self, event):
+    if event.char == 'r':
+        self.v1 = 'red'
+    elif event.char == 'g':
+        self.v1 = 'green'
+    elif event.char == 'y':
+        self.v1 = 'yellow'
+    elif event.char == 'p':
+        self.v1 = 'pink'
+    elif event.char == 'b':
+        self.v1 = '#000'
+    self.fgc['bg'] = self.v1
+```
+
+
+--------------------------
+---
