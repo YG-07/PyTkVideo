@@ -31,29 +31,44 @@ def eventMag(self, event):
     # 1.画直线
     if name=='line':
         self.c.bind('<B1-Motion>', self.myLine)
+    # 其他功能name...
 ```
 #### 2.2.1 画直线思路
 1. 监听鼠标按住事件`myline()`
-2. 先假设从(0,0)开始画线，①先解决重复画线的问题，通过设置一个`lastLine`返回每次画的线，每次调用按住事件时删除一个上一次的线.
-3. ②再解决开始画线坐标问题，再设置一个`startLine`的布尔值,在第一次调用按住事件获取点击事件的坐标(x,y),再改变startLine的值.
-4. ③解决释放按键后，可以重新开始画线，设置一个`stopDraw`绑定释放鼠标事件，将`startLine和lastLine设置为初始值`
+2. 先假设从(0,0)开始画线，①先解决重复画线的问题，通过设置一个`lastDraw`返回每次画的线，每次调用按住事件时删除一个上一次的线.
+3. ②再解决开始画线坐标问题，再设置一个`startLine`的布尔值,在第一次调用按住事件时，使(sx,sy)等于点击事件的坐标(x,y),再改变startLine的值.
+4. ③解决释放按键后，可以重新开始画线，设置一个`stopDraw`绑定释放鼠标事件，将`startLine和lastDraw设置为初始值`
 ```python
 def myLine(self, event):
-    self.c.delete(self.lastLine)
+    self.c.delete(self.lastDraw)
     if not self.startLine:
         self.startLine = True
         self.sx = event.x
         self.sy = event.y
-    self.lastLine=self.c.create_line(self.sx, self.sy, event.x, event.y, fill=self.v1)
+    self.lastDraw=self.c.create_line(self.sx, self.sy, event.x, event.y, fill=self.v1)
 def stopDraw(self, event):
     self.startLine = False
-    self.lastLine = 0
+    self.lastDraw = 0
 ```
 #### 2.2.2 箭头直线思路
 1. 跟画直线结果一模一样，只用在`create_line`函数里添加`arrow=LAST`参数，表示在直线结束添加箭头
-2. 将画直线的共同的代码封装成startDraw函数
+2. 将画直线的共同的代码封装成`startDraw`函数，在之后的图形基本同理
 ```python
 def myArrLine(self, event):
     self.startDraw(event)
-    self.lastLine=self.c.create_line(self.sx, self.sy, event.x, event.y, arrow=LAST, fill=self.v1)
+    self.lastDraw=self.c.create_line(self.sx, self.sy, event.x, event.y, arrow=LAST, fill=self.v1)
+```
+#### 2.2.3 画矩形思路
+1. 同理先startDraw，再设置lastDraw，改成画矩形，设置outline/fill 边框/填充颜色
+```python
+self.lastDraw=self.c.create_rectangle(self.sx, self.sy, event.x, event.y, outline=self.v1, fill=self.v2)
+```
+#### 2.2.4 画笔功能思路
+1. 先startDraw，然后不用删除每次画的小线段，然后将当前事件的(x,y)赋值给(sx,sy)，使每次画的都是一个小线段.
+```python
+def myPen(self, event):
+    self.startDraw(event)
+    self.c.create_line(self.sx, self.sy, event.x, event.y, fill=self.v1)
+    self.sx = event.x
+    self.sy = event.y
 ```

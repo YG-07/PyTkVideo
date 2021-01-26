@@ -27,9 +27,11 @@ class Application(Frame):
         self.createWidget()
 
     def createData(self):
+        self.v1 = '#000'
+        self.v2 = None
         self.sx = 0
         self.sy = 0
-        self.lastLine = 0
+        self.lastDraw = 0
         self.startLine = False
 
     def createWidget(self):
@@ -55,25 +57,38 @@ class Application(Frame):
         self.rect.pack(side='left')
         self.color = Button(self, text='画笔颜色', name='color', width=8)
         self.color.pack(side='left')
-        self.v1 = '#000'
-        self.v2 = '#fff'
+
         self.fgc = Label(self, width=2, height=1, bg=self.v1, borderwidth=1, relief='solid')
         self.fgc.pack(side='left', padx=3)
-        self.bgc = Label(self, width=2, height=1, bg=self.v2, borderwidth=1, relief='solid')
+        self.bgc = Label(self, width=2, height=1, bg=self.v2, borderwidth=1, relief='solid', text='透')
         self.bgc.pack(side='left')
         Separator(self, orient='vertical').pack(side='left', fill='y', padx=20)
 
         # 创建功能按钮
         self.clear = Button(self, text='清屏', name='clear')
         self.clear.pack(side='left')
-        self.save = Button(self, text='保存', name='save', command=self.getter)
+        self.save = Button(self, text='保存', name='save')
         self.save.pack(side='left')
-        self.open = Button(self, text='打开', name='open', command=self.setter)
+        self.open = Button(self, text='打开', name='open')
         self.open.pack(side='left')
 
         # 鼠标事件处理
+        self.save.bind('<Button-1>', self.getter)
+        self.open.bind('<Button-1>', self.setter)
         self.master.bind_class('Button','<1>', self.eventMag)
         self.c.bind('<ButtonRelease-1>', self.stopDraw)
+        # 改变颜色
+        self.color.bind('<Button-1>', self.myFgc)
+        self.fgc.bind('<Button-1>', self.myFgc)
+        self.bgc.bind('<Button-1>', self.myBgc)
+        self.bgc.bind('<Button-3>', self.myTou)
+        # 颜色一快捷字母键
+        self.master.bind('<KeyPress-r>', self.colorKey)
+        self.master.bind('<KeyPress-g>', self.colorKey)
+        self.master.bind('<KeyPress-y>', self.colorKey)
+        self.master.bind('<KeyPress-p>', self.colorKey)
+        self.master.bind('<KeyPress-b>', self.colorKey)
+
 
 
     # 画图功能函数,事件管理
@@ -86,9 +101,17 @@ class Application(Frame):
             self.c.bind('<B1-Motion>', self.myArrLine)
         elif name=='rect':
             self.c.bind('<B1-Motion>', self.myRect)
+        elif name=='circle':
+            self.c.bind('<B1-Motion>', self.myCircle)
+        elif name=='pen':
+            self.c.bind('<B1-Motion>', self.myPen)
+        elif name=='erasor':
+            self.c.bind('<B1-Motion>', self.myErasor)
+        elif name == 'clear':
+            self.c.delete('all')
 
     def startDraw(self, event):
-        self.c.delete(self.lastLine)
+        self.c.delete(self.lastDraw)
         if not self.startLine:
             self.startLine = True
             self.sx = event.x
@@ -96,22 +119,64 @@ class Application(Frame):
     # 画图开始函数
     def stopDraw(self, event):
         self.startLine = False
-        self.lastLine = 0
+        self.lastDraw = 0
     # 直线
     def myLine(self, event):
         self.startDraw(event)
-        self.lastLine=self.c.create_line(self.sx, self.sy, event.x, event.y, fill=self.v1)
+        self.lastDraw=self.c.create_line(self.sx, self.sy, event.x, event.y, fill=self.v1)
     # 箭头直线
     def myArrLine(self, event):
         self.startDraw(event)
-        self.lastLine=self.c.create_line(self.sx, self.sy, event.x, event.y, arrow=LAST, fill=self.v1)
+        self.lastDraw=self.c.create_line(self.sx, self.sy, event.x, event.y, arrow=LAST, fill=self.v1)
     # 矩形
     def myRect(self, event):
-        self
+        self.startDraw(event)
+        self.lastDraw=self.c.create_rectangle(self.sx, self.sy, event.x, event.y, outline=self.v1, fill=self.v2)
+    # 圆
+    def myCircle(self, event):
+        self.startDraw(event)
+        self.lastDraw=self.c.create_oval(self.sx, self.sy, event.x, event.y, outline=self.v1, fill=self.v2)
+    # 画笔
+    def myPen(self, event):
+        self.startDraw(event)
+        self.c.create_line(self.sx, self.sy, event.x, event.y, fill=self.v1)
+        self.sx = event.x
+        self.sy = event.y
+    # 橡皮擦
+    def myErasor(self, event):
+        self.startDraw(event)
+        self.c.create_rectangle(event.x-4,event.y-4,event.x+4,event.y+4, outline='#fff',fill='#fff')
+    # 改变颜色
+    def myFgc(self, event):
+        fg = askcolor(color=self.v1, title='选择颜色一')
+        self.v1 = fg[1]
+        self.fgc['bg']=self.v1
+
+    def myBgc(self, event):
+        bg = askcolor(color=self.v2, title='选择颜色二')
+        self.v2 = bg[1]
+        self.bgc.config(bg=self.v2, text='')
+
+    def myTou(self, event):
+        self.v2 = None
+        self.bgc.config(bg='#eee', text='透')
+
+    # 颜色快捷键
+    def colorKey(self, event):
+        if event.char == 'r':
+            self.v1 = 'red'
+        elif event.char == 'g':
+            self.v1 = 'green'
+        elif event.char == 'y':
+            self.v1 = 'yellow'
+        elif event.char == 'p':
+            self.v1 = 'pink'
+        elif event.char == 'b':
+            self.v1 = '#000'
+        self.fgc['bg'] = self.v1
 
     # 功能函数
-
-    def getter(self):
+    def getter(self, event):
         self.c.update()
         x = self.master.winfo_rootx() + self.c.winfo_x() + 1
         y = self.master.winfo_rooty() + self.c.winfo_y() + 1
@@ -122,7 +187,7 @@ class Application(Frame):
         if self.filename:
             ImageGrab.grab().crop((x, y, x1, y1)).save(self.filename)
 
-    def setter(self):
+    def setter(self, event):
         self.filename = askopenfilename(title='打开图片', defaultextension='.png', \
             filetypes=[('PNG图片', '*.png'),('GIF图片', '*.gif')])
         if not self.filename:
