@@ -33,7 +33,7 @@ class Application(Frame):
         imgp = imgp.resize(self.reSizeImg(0.8,imgp), Image.ANTIALIAS)
         self.img = ImageTk.PhotoImage(imgp)
 
-        self.canvas.create_image(600, 100, image=self.img)
+        self.canvas.create_image(300, 200, image=self.img)
         Button(self, text='随机画3个矩形', command=self.drawRecgs).pack(side='left')
 
     def reSizeImg(self, scale, imgPIL):
